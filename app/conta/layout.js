@@ -11,7 +11,7 @@ export default async function LayoutConta({ children }) {
   return (
     <>
       <MenuConta />
-      {children}
+      <div className="folha">{children}</div>
     </>
   )
 }

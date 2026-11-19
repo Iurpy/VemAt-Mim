@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { criarClienteServidor } from '@/lib/supabase/server'
+import { IconeFamilia, IconePerfil } from '@/components/Icones'
 
 export const metadata = { title: 'Minha conta · Vem Até Mim' }
 
@@ -21,7 +22,13 @@ export default async function PaginaConta() {
 
   return (
     <div>
-      <h1>Olá, {primeiroNome}!</h1>
+      <div className="saudacao">
+        <span className="avatar" aria-hidden="true">{primeiroNome.charAt(0).toUpperCase()}</span>
+        <div>
+          <p>Bem-vindo(a) de volta</p>
+          <h1>Olá, {primeiroNome}!</h1>
+        </div>
+      </div>
 
       {semEndereco && (
         <div className="aviso info">
@@ -46,6 +53,7 @@ export default async function PaginaConta() {
 
       <ul className="lista">
         <li className="item">
+          <span className="etiqueta"><IconeFamilia width="18" height="18" style={{ verticalAlign: '-3px' }} /> Família</span>
           <h2 className="h3">Minha família</h2>
           <p className="detalhe">
             {totalFamiliares
@@ -55,6 +63,7 @@ export default async function PaginaConta() {
           <Link href="/conta/familia" className="botao pequeno secundario">Ver minha família</Link>
         </li>
         <li className="item">
+          <span className="etiqueta"><IconePerfil width="18" height="18" style={{ verticalAlign: '-3px' }} /> Perfil</span>
           <h2 className="h3">Meu perfil</h2>
           <p className="detalhe">Seus dados, endereço e como prefere ver o site.</p>
           <Link href="/conta/perfil" className="botao pequeno secundario">Ver meu perfil</Link>

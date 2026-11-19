@@ -28,11 +28,12 @@ export default function Cabecalho() {
     <header className="cabecalho">
       <div className="largura topo">
         <Link href="/" className="logo" aria-label="Vem Até Mim, página inicial">
-          <svg width="36" height="36" viewBox="0 0 34 34" aria-hidden="true">
-            <path d="M4 16 17 5l13 11v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z" fill="var(--verde)" />
-            <path d="M11 30v-8a6 6 0 0 1 12 0v8" fill="var(--sol)" />
+          <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+            <circle cx="20" cy="20" r="20" fill="#FFFFFF" />
+            <path d="M11 19.5 20 12l9 7.5V29H11z" fill="none" stroke="#0B5FC6" strokeWidth="2.4" strokeLinejoin="round" />
+            <path d="M20 26.5s-3.2-2-3.2-4.2a1.7 1.7 0 0 1 3.2-.9 1.7 1.7 0 0 1 3.2.9c0 2.2-3.2 4.2-3.2 4.2z" fill="#0B5FC6" />
           </svg>
-          Vem Até Mim
+          <span>Vem Até <span className="mim">Mim</span></span>
         </Link>
 
         <nav aria-label="Principal">

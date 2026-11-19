@@ -9,13 +9,16 @@ import { traduzirErro } from '@/lib/erros'
 import Campo from '@/components/Campo'
 import CampoSenha from '@/components/CampoSenha'
 import ResumoErros from '@/components/ResumoErros'
+import { IconeCasaCoracao, IconeMaleta, IconeSeta } from '@/components/Icones'
 
 const TIPOS = {
   cliente: {
+    Icone: IconeCasaCoracao,
     titulo: 'Quero contratar um serviço',
     descricao: 'Para mim ou para alguém da minha família.',
   },
   profissional: {
+    Icone: IconeMaleta,
     titulo: 'Quero oferecer meus serviços',
     descricao: 'Sou manicure, cabeleireira, barbeiro ou faço outro cuidado pessoal.',
   },
@@ -95,12 +98,16 @@ export default function FormCadastro({ tipoInicial }) {
     return (
       <div>
         <h1>Criar conta</h1>
-        <p>O que você quer fazer no Vem Até Mim?</p>
+        <p>Como você quer usar o Vem Até Mim?</p>
         <div className="escolhas">
           {Object.entries(TIPOS).map(([valor, t]) => (
             <button key={valor} type="button" className="escolha" onClick={() => setTipo(valor)}>
-              <strong>{t.titulo}</strong>
-              <span>{t.descricao}</span>
+              <span className="icone"><t.Icone /></span>
+              <span>
+                <strong>{t.titulo}</strong>
+                <span className="texto-escolha">{t.descricao}</span>
+              </span>
+              <IconeSeta className="seta" width="28" height="28" />
             </button>
           ))}
         </div>

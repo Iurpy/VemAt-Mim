@@ -67,25 +67,25 @@ proxy.js                 protege /conta e renova o login
 ## Roteiro de testes do CRUD
 
 **Cadastro e login**
-- [x] Criar conta como "Quero contratar". Conferir em Table Editor > `perfis` que o tipo ficou `cliente`.
-- [x] Criar outra conta como "Quero oferecer". Conferir `tipo = profissional` e uma linha nova em `profissionais`.
-- [x] Tentar cadastrar com o mesmo e-mail: deve aparecer "Já existe uma conta com esse e-mail".
-- [x] Sair e tentar abrir http://localhost:3000/conta: deve mandar para "Entrar".
-- [x] Entrar com senha errada: mensagem em português.
+- [ ] Criar conta como "Quero contratar". Conferir em Table Editor > `perfis` que o tipo ficou `cliente`.
+- [ ] Criar outra conta como "Quero oferecer". Conferir `tipo = profissional` e uma linha nova em `profissionais`.
+- [ ] Tentar cadastrar com o mesmo e-mail: deve aparecer "Já existe uma conta com esse e-mail".
+- [ ] Sair e tentar abrir http://localhost:3000/conta: deve mandar para "Entrar".
+- [ ] Entrar com senha errada: mensagem em português.
 
 **Perfil**
-- [x] Digitar um CEP de Maracanaú (ex.: 61900-000): rua, bairro, cidade e estado aparecem sozinhos.
-- [x] Salvar sem número: o erro aparece no topo e ao lado do campo.
-- [x] Mudar a letra para "Muito grande", salvar, sair e entrar de novo: a letra continua grande.
+- [ ] Digitar um CEP de Maracanaú (ex.: 61900-000): rua, bairro, cidade e estado aparecem sozinhos.
+- [ ] Salvar sem número: o erro aparece no topo e ao lado do campo.
+- [ ] Mudar a letra para "Muito grande", salvar, sair e entrar de novo: a letra continua grande.
 
 **Família**
-- [x] Cadastrar sem marcar a confirmação: deve pedir para marcar.
-- [x] Cadastrar a avó: aparece na lista com o aviso "Familiar cadastrado".
-- [x] Editar o bairro dela e salvar.
-- [x] Excluir: aparece a confirmação; "Não, manter" cancela; "Sim, excluir" apaga.
-- [x] Entrar com a outra conta: a família da primeira **não** aparece.
+- [ ] Cadastrar sem marcar a confirmação: deve pedir para marcar.
+- [ ] Cadastrar a avó: aparece na lista com o aviso "Familiar cadastrado".
+- [ ] Editar o bairro dela e salvar.
+- [ ] Excluir: aparece a confirmação; "Não, manter" cancela; "Sim, excluir" apaga.
+- [ ] Entrar com a outra conta: a família da primeira **não** aparece.
 
 **Acessibilidade**
-- [x] Navegar só com a tecla Tab: o contorno amarelo mostra onde você está.
+- [ ] Navegar só com a tecla Tab: o contorno amarelo mostra onde você está.
 - [ ] Testar o alto contraste e a letra "Muito grande" no celular.
 - [ ] Dar zoom no celular com dois dedos: precisa funcionar.
