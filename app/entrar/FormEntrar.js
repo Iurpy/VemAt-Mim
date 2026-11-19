@@ -9,6 +9,9 @@ import { traduzirErro } from '@/lib/erros'
 import Campo from '@/components/Campo'
 import CampoSenha from '@/components/CampoSenha'
 import ResumoErros from '@/components/ResumoErros'
+import TopoAzul from '@/components/TopoAzul'
+import Logo from '@/components/Logo'
+import BotaoLeitura from '@/components/BotaoLeitura'
 
 export default function FormEntrar({ destino }) {
   const router = useRouter()
@@ -41,39 +44,31 @@ export default function FormEntrar({ destino }) {
   }
 
   return (
-    <div className="formulario">
-      <h1>Entrar</h1>
+    <div className="tela-dividida">
+      <TopoAzul>
+        <div className="topo-linha">
+          <Logo />
+          <BotaoLeitura />
+        </div>
+        <h1>Entrar</h1>
+        <p>Que bom ver você de novo.</p>
+      </TopoAzul>
 
-      <ResumoErros erros={erros} mensagem={mensagem} />
-
-      <form onSubmit={enviar} noValidate>
-        <Campo
-          id="email"
-          rotulo="E-mail"
-          type="email"
-          autoComplete="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          erro={erros.email}
-        />
-        <CampoSenha
-          id="senha"
-          rotulo="Senha"
-          autoComplete="current-password"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-          erro={erros.senha}
-        />
-        <div className="acoes">
-          <button type="submit" className="botao" disabled={enviando}>
+      <div className="folha">
+        <ResumoErros erros={erros} mensagem={mensagem} />
+        <form onSubmit={enviar} noValidate>
+          <Campo id="email" rotulo="E-mail" type="email" autoComplete="email" value={email}
+            onChange={(e) => setEmail(e.target.value)} erro={erros.email} />
+          <CampoSenha id="senha" rotulo="Senha" autoComplete="current-password" value={senha}
+            onChange={(e) => setSenha(e.target.value)} erro={erros.senha} />
+          <button type="submit" className="botao largo" disabled={enviando}>
             {enviando ? 'Entrando...' : 'Entrar'}
           </button>
-        </div>
-      </form>
-
-      <p style={{ marginTop: '1.5rem' }}>
-        Ainda não tem conta? <Link href="/cadastro">Criar conta</Link>
-      </p>
+        </form>
+        <p className="rodape-folha">
+          Ainda não tem conta? <Link href="/">Criar conta</Link>
+        </p>
+      </div>
     </div>
   )
 }

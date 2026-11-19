@@ -4,31 +4,13 @@ import { useEffect, useState } from 'react'
 import { criarClienteNavegador } from '@/lib/supabase/client'
 import { TAMANHOS, aplicarPreferencias, lerPreferencias } from '@/lib/preferencias'
 
-// Botões do topo para aumentar a letra e ligar o alto contraste.
+// Botões de tamanho da letra e alto contraste.
 // Para quem tem login, a escolha também fica salva no perfil.
 export default function ControlesAcessibilidade() {
   const [prefs, setPrefs] = useState({ tamanho: 2, contraste: false })
 
   useEffect(() => {
     setPrefs(lerPreferencias())
-
-    // Se tiver login, a preferência do perfil vale mais que a do navegador
-    const supabase = criarClienteNavegador()
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
-      if (!user) return
-      const { data } = await supabase
-        .from('perfis')
-        .select('tamanho_fonte, alto_contraste')
-        .eq('id', user.id)
-        .single()
-      if (data) {
-        const doPerfil = { tamanho: data.tamanho_fonte, contraste: data.alto_contraste }
-        aplicarPreferencias(doPerfil)
-        setPrefs(doPerfil)
-      }
-    })
-
-    // Mantém os botões certos quando a tela de perfil muda as preferências
     const ouvir = (e) => setPrefs(e.detail)
     window.addEventListener('preferencias-mudaram', ouvir)
     return () => window.removeEventListener('preferencias-mudaram', ouvir)
@@ -49,18 +31,18 @@ export default function ControlesAcessibilidade() {
 
   return (
     <div className="acessibilidade">
-      <div role="group" aria-label="Tamanho da letra" className="tamanhos">
-        <span aria-hidden="true">Letra</span>
+      <p className="acess-titulo" id="titulo-letra">Tamanho da letra</p>
+      <div role="group" aria-labelledby="titulo-letra" className="tamanhos">
         {TAMANHOS.map((t) => (
           <button
             key={t.valor}
             type="button"
             className={`tamanho-${t.valor}`}
             aria-pressed={prefs.tamanho === t.valor}
-            aria-label={`Letra ${t.nome.toLowerCase()}`}
             onClick={() => mudar({ ...prefs, tamanho: t.valor })}
           >
-            A
+            <span aria-hidden="true">A</span>
+            <span className="tamanho-nome">{t.nome}</span>
           </button>
         ))}
       </div>
@@ -70,7 +52,7 @@ export default function ControlesAcessibilidade() {
         aria-pressed={prefs.contraste}
         onClick={() => mudar({ ...prefs, contraste: !prefs.contraste })}
       >
-        Alto contraste
+        Alto contraste {prefs.contraste ? 'ligado' : 'desligado'}
       </button>
     </div>
   )

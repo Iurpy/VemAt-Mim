@@ -12,6 +12,7 @@ import { traduzirErro } from '@/lib/erros'
 import Campo from '@/components/Campo'
 import CamposEndereco from '@/components/CamposEndereco'
 import ResumoErros from '@/components/ResumoErros'
+import CabecalhoBranco from '@/components/CabecalhoBranco'
 
 const PARENTESCOS = ['Mãe', 'Pai', 'Avó', 'Avô', 'Tia', 'Tio', 'Sogra', 'Sogro', 'Irmã', 'Irmão', 'Esposa', 'Marido']
 
@@ -91,12 +92,12 @@ export default function FormFamiliar({ id }) {
     router.refresh()
   }
 
-  if (carregando) return <p className="carregando" role="status">Carregando...</p>
+  if (carregando) return <p className="pagina-branca carregando" role="status">Carregando...</p>
 
   if (naoEncontrado) {
     return (
-      <div>
-        <h1>Familiar não encontrado</h1>
+      <div className="pagina-branca">
+        <CabecalhoBranco titulo="Familiar não encontrado" voltar="/conta/familia" rotuloVoltar="Voltar para minha família" />
         <p>Esse cadastro não existe ou não é da sua família.</p>
         <Link href="/conta/familia" className="botao">Voltar para minha família</Link>
       </div>
@@ -104,8 +105,8 @@ export default function FormFamiliar({ id }) {
   }
 
   return (
-    <div className="formulario">
-      <h1>{editando ? `Editar ${dados.nome}` : 'Cadastrar familiar'}</h1>
+    <div className="pagina-branca formulario">
+      <CabecalhoBranco titulo={editando ? 'Editar familiar' : 'Cadastrar familiar'} voltar="/conta/familia" rotuloVoltar="Voltar para minha família" />
 
       <ResumoErros erros={erros} mensagem={mensagem} />
 

@@ -3,30 +3,34 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Briefcase, Check, HeartHandshake } from 'lucide-react'
 import { criarClienteNavegador } from '@/lib/supabase/client'
 import { emailValido, formatarTelefone, soDigitos, telefoneValido } from '@/lib/formatos'
 import { traduzirErro } from '@/lib/erros'
 import Campo from '@/components/Campo'
 import CampoSenha from '@/components/CampoSenha'
 import ResumoErros from '@/components/ResumoErros'
-import { IconeCasaCoracao, IconeMaleta, IconeSeta } from '@/components/Icones'
+import TopoAzul from '@/components/TopoAzul'
+import Logo from '@/components/Logo'
+import BotaoLeitura from '@/components/BotaoLeitura'
 
 const TIPOS = {
   cliente: {
-    Icone: IconeCasaCoracao,
-    titulo: 'Quero contratar um serviço',
-    descricao: 'Para mim ou para alguém da minha família.',
+    Icone: HeartHandshake,
+    titulo: 'Quero contratar',
+    descricao: 'Atendimento em casa para mim ou para alguém da família',
   },
   profissional: {
-    Icone: IconeMaleta,
-    titulo: 'Quero oferecer meus serviços',
-    descricao: 'Sou manicure, cabeleireira, barbeiro ou faço outro cuidado pessoal.',
+    Icone: Briefcase,
+    titulo: 'Sou profissional',
+    descricao: 'Quero oferecer meus serviços',
   },
 }
 
 export default function FormCadastro({ tipoInicial }) {
   const router = useRouter()
-  const [tipo, setTipo] = useState(tipoInicial)
+  const [passo, setPasso] = useState(tipoInicial ? 2 : 1)
+  const [tipo, setTipo] = useState(tipoInicial || 'cliente')
   const [dados, setDados] = useState({ nome: '', telefone: '', email: '', senha: '' })
   const [erros, setErros] = useState({})
   const [mensagem, setMensagem] = useState('')
@@ -68,121 +72,112 @@ export default function FormCadastro({ tipoInicial }) {
       setMensagem(traduzirErro(error))
       return
     }
-
     if (data.session) {
       router.push('/conta')
       router.refresh()
     } else {
-      // O Supabase está exigindo confirmação por e-mail
-      setEmailEnviado(true)
+      setEmailEnviado(true) // o Supabase está exigindo confirmação por e-mail
     }
   }
 
+  const topo = (titulo, subtitulo) => (
+    <TopoAzul>
+      <div className="topo-linha">
+        <Logo />
+        <BotaoLeitura />
+      </div>
+      <h1>{titulo}</h1>
+      <p>{subtitulo}</p>
+    </TopoAzul>
+  )
+
   if (emailEnviado) {
     return (
-      <div className="formulario">
-        <h1>Falta só confirmar o e-mail</h1>
-        <div className="aviso sucesso" role="status">
-          <p>
-            Enviamos um link para <strong>{dados.email}</strong>. Abra seu e-mail e toque no link
-            para ativar a conta.
-          </p>
-          <p>Não chegou? Veja também a pasta de spam ou lixo eletrônico.</p>
+      <div className="tela-dividida">
+        {topo('Falta só confirmar', 'Abra o seu e-mail para ativar a conta.')}
+        <div className="folha">
+          <div className="aviso sucesso" role="status">
+            <p>Enviamos um link para <strong>{dados.email}</strong>. Toque nele para ativar a conta.</p>
+            <p>Não chegou? Veja também a pasta de spam ou lixo eletrônico.</p>
+          </div>
         </div>
       </div>
     )
   }
 
-  // Passo 1: escolher o tipo de conta
-  if (!tipo) {
+  // Passo 1: escolher como vai usar o site
+  if (passo === 1) {
     return (
-      <div>
-        <h1>Criar conta</h1>
-        <p>Como você quer usar o Vem Até Mim?</p>
-        <div className="escolhas">
-          {Object.entries(TIPOS).map(([valor, t]) => (
-            <button key={valor} type="button" className="escolha" onClick={() => setTipo(valor)}>
-              <span className="icone"><t.Icone /></span>
-              <span>
-                <strong>{t.titulo}</strong>
-                <span className="texto-escolha">{t.descricao}</span>
-              </span>
-              <IconeSeta className="seta" width="28" height="28" />
-            </button>
-          ))}
+      <div className="tela-dividida">
+        {topo('Crie sua conta', 'Cuidado pessoal que chega até a sua porta, com segurança.')}
+        <div className="folha">
+          <fieldset className="opcoes-conta">
+            <legend>Como você vai usar o site?</legend>
+            {Object.entries(TIPOS).map(([valor, t]) => (
+              <label key={valor} className="opcao-conta">
+                <input
+                  type="radio"
+                  name="tipo"
+                  value={valor}
+                  checked={tipo === valor}
+                  onChange={() => setTipo(valor)}
+                  className="so-leitor"
+                />
+                <span className="opcao-icone" aria-hidden="true"><t.Icone size={24} /></span>
+                <span className="opcao-texto">
+                  <strong>{t.titulo}</strong>
+                  <span>{t.descricao}</span>
+                </span>
+                <span className="opcao-marca" aria-hidden="true"><Check size={18} strokeWidth={3} /></span>
+              </label>
+            ))}
+          </fieldset>
+
+          <button type="button" className="botao largo" onClick={() => setPasso(2)}>
+            Continuar
+          </button>
+
+          <p className="rodape-folha">
+            Já tem conta? <Link href="/entrar">Entrar</Link>
+          </p>
         </div>
-        <p>
-          Já tem conta? <Link href="/entrar">Entrar</Link>
-        </p>
       </div>
     )
   }
 
   // Passo 2: dados da conta
   return (
-    <div className="formulario">
-      <h1>Criar conta</h1>
-
-      <div className="aviso info">
-        <p>
-          Você escolheu: <strong>{TIPOS[tipo].titulo}</strong>.{' '}
-          <button type="button" className="link" onClick={() => setTipo(null)}>
-            Trocar
-          </button>
+    <div className="tela-dividida">
+      {topo('Seus dados', tipo === 'profissional' ? 'Conta de profissional' : 'Conta para contratar serviços')}
+      <div className="folha">
+        <p className="escolhido">
+          {TIPOS[tipo].titulo}.{' '}
+          <button type="button" className="link" onClick={() => setPasso(1)}>Trocar</button>
         </p>
-      </div>
 
-      <ResumoErros erros={erros} mensagem={mensagem} />
+        <ResumoErros erros={erros} mensagem={mensagem} />
 
-      <form onSubmit={enviar} noValidate>
-        <Campo
-          id="nome"
-          rotulo="Seu nome"
-          autoComplete="name"
-          value={dados.nome}
-          onChange={(e) => alterar('nome', e.target.value)}
-          erro={erros.nome}
-        />
-        <Campo
-          id="telefone"
-          rotulo="Telefone com DDD"
-          type="tel"
-          inputMode="tel"
-          autoComplete="tel"
-          ajuda="De preferência com WhatsApp."
-          value={dados.telefone}
-          onChange={(e) => alterar('telefone', formatarTelefone(e.target.value))}
-          erro={erros.telefone}
-        />
-        <Campo
-          id="email"
-          rotulo="E-mail"
-          type="email"
-          autoComplete="email"
-          value={dados.email}
-          onChange={(e) => alterar('email', e.target.value)}
-          erro={erros.email}
-        />
-        <CampoSenha
-          id="senha"
-          rotulo="Crie uma senha"
-          ajuda="Pelo menos 6 letras ou números."
-          autoComplete="new-password"
-          value={dados.senha}
-          onChange={(e) => alterar('senha', e.target.value)}
-          erro={erros.senha}
-        />
+        <form onSubmit={enviar} noValidate>
+          <Campo id="nome" rotulo="Seu nome" autoComplete="name" value={dados.nome}
+            onChange={(e) => alterar('nome', e.target.value)} erro={erros.nome} />
+          <Campo id="telefone" rotulo="Telefone com DDD" type="tel" inputMode="tel" autoComplete="tel"
+            ajuda="De preferência com WhatsApp." value={dados.telefone}
+            onChange={(e) => alterar('telefone', formatarTelefone(e.target.value))} erro={erros.telefone} />
+          <Campo id="email" rotulo="E-mail" type="email" autoComplete="email" value={dados.email}
+            onChange={(e) => alterar('email', e.target.value)} erro={erros.email} />
+          <CampoSenha id="senha" rotulo="Crie uma senha" ajuda="Pelo menos 6 letras ou números."
+            autoComplete="new-password" value={dados.senha}
+            onChange={(e) => alterar('senha', e.target.value)} erro={erros.senha} />
 
-        <div className="acoes">
-          <button type="submit" className="botao" disabled={enviando}>
+          <button type="submit" className="botao largo" disabled={enviando}>
             {enviando ? 'Criando conta...' : 'Criar conta'}
           </button>
-        </div>
-      </form>
+        </form>
 
-      <p style={{ marginTop: '1.5rem' }}>
-        Já tem conta? <Link href="/entrar">Entrar</Link>
-      </p>
+        <p className="rodape-folha">
+          Já tem conta? <Link href="/entrar">Entrar</Link>
+        </p>
+      </div>
     </div>
   )
 }

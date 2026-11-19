@@ -1,74 +1,109 @@
 import Link from 'next/link'
+import { ChevronRight, MapPin, Search } from 'lucide-react'
 import { criarClienteServidor } from '@/lib/supabase/server'
-import { IconeFamilia, IconePerfil } from '@/components/Icones'
+import TopoAzul from '@/components/TopoAzul'
+import BotaoLeitura from '@/components/BotaoLeitura'
+import CartaoAgendamento from '@/components/CartaoAgendamento'
+import { infoServico } from '@/components/IconeServico'
+import { CAMPOS_AGENDAMENTO } from '@/lib/agendamentos'
 
-export const metadata = { title: 'Minha conta · Vem Até Mim' }
+export const metadata = { title: 'Início | Vem Até Mim' }
+
+const DESTAQUES = ['Manicure', 'Pedicure', 'Corte masculino', 'Corte feminino', 'Barba', 'Escova']
 
 export default async function PaginaConta() {
   const supabase = await criarClienteServidor()
   const { data: { user } } = await supabase.auth.getUser()
-  const { data: perfil } = await supabase
-    .from('perfis')
-    .select('nome, tipo, cep')
-    .eq('id', user.id)
-    .single()
 
-  const { count: totalFamiliares } = await supabase
-    .from('familiares')
-    .select('id', { count: 'exact', head: true })
+  const [{ data: perfil }, { data: servicos }, { data: proximos }] = await Promise.all([
+    supabase.from('perfis').select('nome, tipo, bairro, cidade, uf').eq('id', user.id).single(),
+    supabase.from('servicos').select('id, nome').eq('exige_revisao', false),
+    supabase
+      .from('agendamentos')
+      .select(CAMPOS_AGENDAMENTO)
+      .eq('cliente_id', user.id)
+      .gte('inicio', new Date().toISOString())
+      .neq('status', 'cancelado')
+      .order('inicio')
+      .limit(3),
+  ])
 
   const primeiroNome = perfil?.nome?.split(' ')[0] ?? ''
-  const semEndereco = !perfil?.cep
+  const destaques = DESTAQUES.map((n) => servicos?.find((s) => s.nome === n)).filter(Boolean)
 
   return (
-    <div>
-      <div className="saudacao">
-        <span className="avatar" aria-hidden="true">{primeiroNome.charAt(0).toUpperCase()}</span>
-        <div>
-          <p>Bem-vindo(a) de volta</p>
-          <h1>Olá, {primeiroNome}!</h1>
+    <>
+      <TopoAzul>
+        <div className="topo-linha">
+          <div className="saudacao">
+            <span className="avatar" aria-hidden="true">{primeiroNome.charAt(0).toUpperCase()}</span>
+            <div>
+              <span className="saudacao-pequena">Bem-vindo(a),</span>
+              <h1>Olá, {primeiroNome}!</h1>
+            </div>
+          </div>
+          <BotaoLeitura />
         </div>
+
+        {perfil?.bairro ? (
+          <p className="local"><MapPin size={18} aria-hidden="true" /> {perfil.bairro}, {perfil.cidade} - {perfil.uf}</p>
+        ) : (
+          <p className="local"><MapPin size={18} aria-hidden="true" /> <Link href="/conta/perfil">Adicionar meu endereço</Link></p>
+        )}
+
+        <form action="/buscar" className="busca-topo" role="search">
+          <label htmlFor="busca" className="busca-pergunta">Qual cuidado você precisa hoje?</label>
+          <div className="busca-caixa">
+            <Search size={22} aria-hidden="true" className="busca-lupa" />
+            <input id="busca" name="q" type="search" placeholder="Buscar manicure, corte, barba..." />
+            <button type="submit" className="botao verde">Buscar</button>
+          </div>
+        </form>
+      </TopoAzul>
+
+      <div className="folha">
+        {perfil?.tipo === 'profissional' && (
+          <div className="aviso info">
+            <p>Em breve você vai cadastrar aqui seus serviços, preços, bairros e horários.</p>
+          </div>
+        )}
+
+        <div className="secao-titulo">
+          <h2>Serviços</h2>
+          <Link href="/buscar" className="ver-todos">Ver todos <ChevronRight size={18} aria-hidden="true" /></Link>
+        </div>
+        <ul className="grade-servicos">
+          {destaques.map((s) => {
+            const { Icone, curta } = infoServico(s.nome)
+            return (
+              <li key={s.id}>
+                <Link href={`/buscar?servico=${s.id}`} className="tile-servico">
+                  <span className="tile-icone" aria-hidden="true"><Icone size={26} /></span>
+                  <strong>{s.nome}</strong>
+                  {curta && <span>{curta}</span>}
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+
+        <div className="secao-titulo">
+          <h2>Próximos agendamentos</h2>
+          {proximos?.length > 0 && (
+            <Link href="/conta/agenda" className="ver-todos">Ver agenda <ChevronRight size={18} aria-hidden="true" /></Link>
+          )}
+        </div>
+        {proximos?.length ? (
+          <ul className="lista-agendamentos">
+            {proximos.map((a) => <CartaoAgendamento key={a.id} a={a} />)}
+          </ul>
+        ) : (
+          <div className="vazio">
+            <p>Você ainda não tem agendamentos.</p>
+            <Link href="/buscar" className="botao">Buscar profissionais</Link>
+          </div>
+        )}
       </div>
-
-      {semEndereco && (
-        <div className="aviso info">
-          <p>
-            <strong>Falta o seu endereço.</strong>{' '}
-            {perfil?.tipo === 'profissional'
-              ? 'Ele mostra às famílias de onde você sai para atender.'
-              : 'Ele é usado quando você agenda um atendimento para você.'}
-          </p>
-          <Link href="/conta/perfil" className="botao pequeno">Completar meu endereço</Link>
-        </div>
-      )}
-
-      {perfil?.tipo === 'profissional' && (
-        <div className="aviso info">
-          <p>
-            <strong>Em breve:</strong> aqui você vai cadastrar seus serviços, seus preços,
-            os bairros onde atende e seus horários.
-          </p>
-        </div>
-      )}
-
-      <ul className="lista">
-        <li className="item">
-          <span className="etiqueta"><IconeFamilia width="18" height="18" style={{ verticalAlign: '-3px' }} /> Família</span>
-          <h2 className="h3">Minha família</h2>
-          <p className="detalhe">
-            {totalFamiliares
-              ? `${totalFamiliares} ${totalFamiliares === 1 ? 'pessoa cadastrada' : 'pessoas cadastradas'}.`
-              : 'Cadastre quem você quer ajudar a agendar, como pais ou avós.'}
-          </p>
-          <Link href="/conta/familia" className="botao pequeno secundario">Ver minha família</Link>
-        </li>
-        <li className="item">
-          <span className="etiqueta"><IconePerfil width="18" height="18" style={{ verticalAlign: '-3px' }} /> Perfil</span>
-          <h2 className="h3">Meu perfil</h2>
-          <p className="detalhe">Seus dados, endereço e como prefere ver o site.</p>
-          <Link href="/conta/perfil" className="botao pequeno secundario">Ver meu perfil</Link>
-        </li>
-      </ul>
-    </div>
+    </>
   )
 }

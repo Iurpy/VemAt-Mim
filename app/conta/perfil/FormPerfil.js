@@ -111,8 +111,6 @@ export default function FormPerfil() {
 
   return (
     <div className="formulario">
-      <h1>Meu perfil</h1>
-
       {salvo && <div className="aviso sucesso" role="status"><p><strong>Perfil salvo.</strong></p></div>}
       <ResumoErros erros={erros} mensagem={mensagem} />
 
@@ -159,7 +157,7 @@ export default function FormPerfil() {
         </fieldset>
 
         <div className="acoes">
-          <button type="submit" className="botao" disabled={salvando}>
+          <button type="submit" className="botao largo" disabled={salvando}>
             {salvando ? 'Salvando...' : 'Salvar perfil'}
           </button>
         </div>

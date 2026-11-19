@@ -34,8 +34,8 @@ export async function proxy(request) {
     return NextResponse.redirect(url)
   }
 
-  // Já logado não precisa ver as telas de entrar e cadastrar
-  if (user && (caminho === '/entrar' || caminho === '/cadastro')) {
+  // Já logado vai direto para o início da conta
+  if (user && (caminho === '/' || caminho === '/entrar' || caminho === '/cadastro')) {
     const url = request.nextUrl.clone()
     url.pathname = '/conta'
     url.search = ''

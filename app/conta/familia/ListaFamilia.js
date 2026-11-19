@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react'
 import { criarClienteNavegador } from '@/lib/supabase/client'
 import { formatarTelefone, resumoEndereco } from '@/lib/formatos'
 import { traduzirErro } from '@/lib/erros'
+import { Plus } from 'lucide-react'
+import CabecalhoBranco from '@/components/CabecalhoBranco'
 
 const AVISOS = {
   criado: 'Familiar cadastrado.',
@@ -50,16 +52,14 @@ export default function ListaFamilia({ aviso }) {
   }
 
   return (
-    <div>
-      <h1>Minha família</h1>
-      <p>Cadastre as pessoas para quem você vai agendar atendimentos. Elas não precisam ter conta no site.</p>
+    <div className="pagina-branca">
+      <CabecalhoBranco titulo="Minha família" voltar="/conta/perfil" rotuloVoltar="Voltar para o perfil" />
+      <p className="fraco">Pessoas para quem você agenda atendimentos. Elas não precisam ter conta no site.</p>
 
       {sucesso && <div className="aviso sucesso" role="status"><p><strong>{sucesso}</strong></p></div>}
       {mensagem && <div className="aviso erro" role="alert"><p>{mensagem}</p></div>}
 
-      <div className="acoes" style={{ marginTop: 0, marginBottom: '1.5rem' }}>
-        <Link href="/conta/familia/nova" className="botao">Cadastrar familiar</Link>
-      </div>
+      <p><Link href="/conta/familia/nova" className="botao largo"><Plus size={22} aria-hidden="true" /> Cadastrar familiar</Link></p>
 
       {familiares === null && <p className="carregando" role="status">Carregando sua família...</p>}
 
@@ -92,7 +92,7 @@ export default function ListaFamilia({ aviso }) {
                   </div>
                 </div>
               ) : (
-                <div className="acoes" style={{ marginTop: '0.8rem' }}>
+                <div className="acoes-item">
                   <Link href={`/conta/familia/${f.id}`} className="botao pequeno secundario">
                     Editar<span className="so-leitor"> {f.nome}</span>
                   </Link>
